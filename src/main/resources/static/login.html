@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Suraksha</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="app-body">
+
+  <div class="mobile-app auth-screen">
+
+    <!-- Header -->
+    <div class="auth-header">
+      <a href="index.html" class="back-btn">←</a>
+      <h1>Welcome Back</h1>
+      <p>Login to access your safety dashboard</p>
+    </div>
+
+    <!-- Branding Card -->
+    <div class="auth-brand-card">
+      <div class="brand-icon">🛡️</div>
+      <h2>Suraksha</h2>
+      <p>Your personal women safety companion</p>
+    </div>
+
+    <!-- Login Form -->
+    <form class="auth-form" id="loginForm">
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="Enter your email" required />
+      </div>
+
+      <div class="input-group">
+        <label for="password">Password</label>
+        <div class="password-box">
+          <input type="password" id="password" name="password" placeholder="Enter your password" required />
+          <button type="button" class="toggle-password" id="togglePassword">👁</button>
+        </div>
+      </div>
+
+      <div class="auth-options">
+        <label class="remember-me">
+          <input type="checkbox" id="rememberMe" />
+          <span>Remember me</span>
+        </label>
+
+        <a href="#" class="forgot-link">Forgot Password?</a>
+      </div>
+
+      <button type="submit" class="auth-submit-btn" id="loginBtn">
+        Login
+      </button>
+
+      <p class="form-message" id="formMessage"></p>
+    </form>
+
+    <!-- Footer Links -->
+    <div class="auth-footer">
+      <p>Don’t have an account?</p>
+      <a href="register.html">Create Account</a>
+    </div>
+
+  </div>
+
+<script src="login.js"></script>
+</body>
+</html>

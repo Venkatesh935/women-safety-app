@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOS Alert</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body class="app-body">
+
+<div class="mobile-app">
+
+<header class="top-bar">
+<h2>Emergency SOS</h2>
+</header>
+
+<section class="sos-alert-box">
+
+<h3>Emergency Alert</h3>
+<p>If you are in danger press the button below.</p>
+
+<button id="sendSOS" class="danger-btn">
+SEND SOS ALERT
+</button>
+
+<p id="status"></p>
+
+</section>
+
+<section class="camera-section">
+
+<h3>Capture Photo</h3>
+
+<video id="video" width="100%" autoplay></video>
+
+<button id="captureBtn" class="primary-btn">
+Capture Photo
+</button>
+
+<canvas id="canvas" style="display:none;"></canvas>
+
+</section>
+
+<section class="location-section">
+
+<h3>Your Location</h3>
+
+<p id="locationText">Location not detected</p>
+
+<button id="getLocation" class="primary-btn">
+Get Location
+</button>
+
+</section>
+
+<nav class="bottom-nav">
+
+<a href="dashboard.html" class="nav-item">
+<span>🛡️</span>
+<small>Dashboard</small>
+</a>
+
+<a href="contacts.html" class="nav-item">
+<span>👥</span>
+<small>Contacts</small>
+</a>
+
+<a href="sos.html" class="nav-item active">
+<span>🚨</span>
+<small>SOS</small>
+</a>
+
+</nav>
+
+</div>
+
+<script src="sos.js"></script>
+
+</body>
+</html>

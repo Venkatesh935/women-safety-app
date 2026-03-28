@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nearby Police Stations - Suraksha</title>
+
+  <link
+    rel="stylesheet"
+    href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps.css"
+  />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #fff7fb;
+    }
+
+    #map {
+      width: 100%;
+      height: 100vh;
+    }
+
+    .topbar {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 10;
+      background: white;
+      padding: 10px 14px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .backBtn {
+      text-decoration: none;
+      color: #e91e63;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .info-box {
+      position: absolute;
+      bottom: 20px;
+      left: 12px;
+      right: 12px;
+      z-index: 10;
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+      max-width: 420px;
+      margin: 0 auto;
+      display: none;
+    }
+
+    .info-box h3 {
+      color: #e91e63;
+      margin-bottom: 8px;
+      font-size: 20px;
+    }
+
+    .info-box p {
+      font-size: 14px;
+      color: #444;
+      margin: 6px 0;
+      line-height: 1.4;
+    }
+
+    .nav-btn {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: #e91e63;
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <a href="dashboard.html" class="backBtn">← Back</a>
+  </div>
+
+  <div id="map"></div>
+
+  <div class="info-box" id="nearestInfo">
+    <h3 id="infoTitle">Nearest Police Station</h3>
+    <p id="stationName"></p>
+    <p id="stationAddress"></p>
+    <p id="stationDistance"></p>
+    <a id="navigateBtn" class="nav-btn" target="_blank">Open in Google Maps</a>
+  </div>
+
+  <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps-web.min.js"></script>
+
+  <script>
+    const TOMTOM_API_KEY = "AO439ImV4idoCL7mKqB5piur7KOgVZXx";
+    const POLICE_CATEGORY_ID = 7322;
+
+    function calculateDistanceKm(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) *
+        Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    function updateInfoBox(place, distance, isNearest = false) {
+      const placeName = place.poi && place.poi.name
+        ? place.poi.name
+        : "Police Station";
+
+      const placeAddress = place.address && place.address.freeformAddress
+        ? place.address.freeformAddress
+        : "Address not available";
+
+      document.getElementById("infoTitle").innerText = isNearest
+        ? "Nearest Police Station"
+        : "Selected Police Station";
+
+      document.getElementById("stationName").innerText = placeName;
+      document.getElementById("stationAddress").innerText = placeAddress;
+      document.getElementById("stationDistance").innerText =
+        `Approx. Distance: ${distance.toFixed(2)} km`;
+
+      const navUrl =
+        `https://www.google.com/maps/dir/?api=1&destination=${place.position.lat},${place.position.lon}`;
+
+      document.getElementById("navigateBtn").href = navUrl;
+      document.getElementById("nearestInfo").style.display = "block";
+    }
+
+    async function initMap() {
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported by this browser.");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const userLat = position.coords.latitude;
+          const userLon = position.coords.longitude;
+
+          const map = tt.map({
+            key: TOMTOM_API_KEY,
+            container: "map",
+            center: [userLon, userLat],
+            zoom: 14
+          });
+
+          map.addControl(new tt.NavigationControl());
+
+          new tt.Marker({ color: "blue" })
+            .setLngLat([userLon, userLat])
+            .setPopup(new tt.Popup({ offset: 30 }).setHTML("<b>Your Location</b>"))
+            .addTo(map);
+
+          try {
+            const url =
+              `https://api.tomtom.com/search/2/categorySearch/.json` +
+              `?key=${TOMTOM_API_KEY}` +
+              `&lat=${userLat}` +
+              `&lon=${userLon}` +
+              `&radius=15000` +
+              `&limit=20` +
+              `&categorySet=${POLICE_CATEGORY_ID}`;
+
+            const response = await fetch(url);
+            const data = await response.json();
+
+            console.log("TomTom categorySearch response:", data);
+
+            if (!data.results || data.results.length === 0) {
+              alert("No nearby police station found.");
+              return;
+            }
+
+            let nearestStation = null;
+            let nearestDistance = Number.MAX_VALUE;
+
+            const bounds = new tt.LngLatBounds();
+            bounds.extend([userLon, userLat]);
+
+            data.results.forEach((place) => {
+              const placeLat = place.position.lat;
+              const placeLon = place.position.lon;
+              const distance = calculateDistanceKm(userLat, userLon, placeLat, placeLon);
+
+              if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearestStation = place;
+              }
+
+              bounds.extend([placeLon, placeLat]);
+
+              const placeName = place.poi?.name || "Police Station";
+              const placeAddress = place.address?.freeformAddress || "Address not available";
+
+              const popup = new tt.Popup({ offset: 30 }).setHTML(`
+                <div style="padding:8px; min-width:180px;">
+                  <h4 style="margin:0 0 6px 0;">${placeName}</h4>
+                  <p style="margin:0 0 6px 0; font-size:13px;">${placeAddress}</p>
+                  <p style="margin:0; font-size:13px;">Distance: ${distance.toFixed(2)} km</p>
+                </div>
+              `);
+
+              const marker = new tt.Marker({ color: "red" })
+                .setLngLat([placeLon, placeLat])
+                .setPopup(popup)
+                .addTo(map);
+
+              marker.getElement().addEventListener("click", () => {
+                popup.addTo(map);
+                map.flyTo({
+                  center: [placeLon, placeLat],
+                  zoom: 15
+                });
+                updateInfoBox(place, distance, false);
+              });
+            });
+
+            map.fitBounds(bounds, { padding: 60 });
+
+            if (nearestStation) {
+              updateInfoBox(nearestStation, nearestDistance, true);
+            }
+
+          } catch (error) {
+            console.error("TomTom search error:", error);
+            alert("Failed to load nearby police stations.");
+          }
+        },
+        (error) => {
+          console.error("Location Error:", error);
+          alert("Unable to get your location.");
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        }
+      );
+    }
+
+    initMap();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emergency Contacts - Suraksha</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="app-body">
+
+  <div class="mobile-app">
+
+    <header class="top-bar">
+      <div>
+        <p class="welcome-text">Safety Network</p>
+        <h1 class="user-name">Emergency Contacts</h1>
+      </div>
+      <button class="icon-btn" aria-label="Contacts">👥</button>
+    </header>
+
+    <section class="contacts-card">
+      <h3>Add New Contact</h3>
+
+      <form id="contactForm" class="contact-form">
+        <div class="input-group">
+          <label for="contactName">Full Name</label>
+          <input type="text" id="contactName" placeholder="Enter contact name" required />
+        </div>
+
+        <div class="input-group">
+          <label for="relationship">Relationship</label>
+          <input type="text" id="relationship" placeholder="Father / Friend / Sister" required />
+        </div>
+
+        <div class="input-group">
+          <label for="phoneNumber">Phone Number</label>
+          <input type="tel" id="phoneNumber" placeholder="Enter number like +919876543210" required />
+        </div>
+
+        <button type="submit" class="auth-submit-btn">Save Contact</button>
+        <p id="contactMessage" class="form-message"></p>
+      </form>
+    </section>
+
+    <section class="section-block">
+      <div class="section-title-row">
+        <h3>Saved Contacts</h3>
+      </div>
+
+      <div id="contactsList" class="contacts-list">
+        <!-- Contacts will appear here -->
+      </div>
+    </section>
+
+    <nav class="bottom-nav">
+      <a href="index.html" class="nav-item">
+        <span>🏠</span>
+        <small>Home</small>
+      </a>
+
+      <a href="dashboard.html" class="nav-item">
+        <span>🛡️</span>
+        <small>Dashboard</small>
+      </a>
+
+      <a href="contacts.html" class="nav-item active">
+        <span>👥</span>
+        <small>Contacts</small>
+      </a>
+
+      <a href="sos.html" class="nav-item">
+        <span>🚨</span>
+        <small>SOS</small>
+      </a>
+    </nav>
+
+  </div>
+
+  <script src="contacts.js"></script>
+</body>
+</html>
