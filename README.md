@@ -35,5 +35,6 @@ A real-time emergency safety application designed to help users during dangerous
 ## Important
 Sensitive values like database password, Twilio SID, and Twilio token are not included in this repository.
 
+
 ## Author
 Venkatesh
